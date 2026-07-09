@@ -2,6 +2,12 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v0.14.0 - 2026-07-09
+
+### Added
+- **Editable Caption & Alt Text**: Added ability to edit file caption and alt text directly from the media browser details panel.
+- **Missing Translations**: Added `no_caption` and `no_alt_text` translation keys across all 20 supported languages.
+
 ## v0.13.1 - 2026-06-30
 
 ### Fixed
