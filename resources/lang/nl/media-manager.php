@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Selecteer specifieke conversies om opnieuw te genereren. Laat leeg voor alle.',
         'file_updated_successfully' => 'Bestand succesvol bijgewerkt',
         'replace_file_help' => 'Upload een nieuw bestand om het huidige bestand te vervangen terwijl hetzelfde mediarecord behouden blijft.',
+        'no_caption' => 'Geen bijschrift',
+        'no_alt_text' => 'Geen alt-tekst',
         'upload_name_help' => 'Optioneel. Als dit leeg blijft, wordt de originele bestandsnaam als titel gebruikt.',
         'alt_text_help' => 'Wordt gebruikt voor het alt-attribuut van de afbeelding en SEO.',
     ],

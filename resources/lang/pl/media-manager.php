@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Wybierz określone konwersje do ponownego wygenerowania. Pozostaw puste dla wszystkich.',
         'file_updated_successfully' => 'Plik został pomyślnie zaktualizowany',
         'replace_file_help' => 'Prześlij nowy plik, aby zastąpić bieżący plik, zachowując ten sam rekord mediów.',
+        'no_caption' => 'Brak podpisu',
+        'no_alt_text' => 'Brak tekstu alternatywnego',
         'upload_name_help' => 'Opcjonalne. Jeśli pozostanie puste, jako tytuł zostanie użyta oryginalna nazwa pliku.',
         'alt_text_help' => 'Używane dla atrybutu alt obrazu i SEO.',
     ],

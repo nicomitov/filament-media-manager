@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => '选择要重新生成的特定转换。留空则为全部。',
         'file_updated_successfully' => '文件已成功更新',
         'replace_file_help' => '上传一个新文件以替换当前文件，同时保留相同的媒体记录。',
+        'no_caption' => '无标题',
+        'no_alt_text' => '无替代文本',
         'upload_name_help' => '可选。如果留空，将使用原始文件名作为标题。',
         'alt_text_help' => '用于图片的 alt 属性和 SEO。',
     ],

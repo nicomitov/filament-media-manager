@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Sélectionnez les conversions à régénérer. Laissez vide pour toutes.',
         'file_updated_successfully' => 'Fichier mis à jour avec succès',
         'replace_file_help' => 'Téléversez un nouveau fichier pour remplacer le fichier actuel tout en conservant le même enregistrement média.',
+        'no_caption' => 'Aucune légende',
+        'no_alt_text' => 'Aucun texte alternatif',
         'upload_name_help' => 'Optionnel. Si laissé vide, le nom de fichier original sera utilisé comme titre.',
         'alt_text_help' => "Utilisé pour l'attribut alt de l'image et le référencement.",
     ],

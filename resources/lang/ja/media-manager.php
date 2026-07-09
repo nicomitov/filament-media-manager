@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => '再生成する特定の変換を選択してください。すべて対象にするには空欄のままにしてください。',
         'file_updated_successfully' => 'ファイルを正常に更新しました',
         'replace_file_help' => '同じメディアレコードを保持したまま、現在のファイルを置き換える新しいファイルをアップロードしてください。',
+        'no_caption' => 'キャプションなし',
+        'no_alt_text' => '代替テキストなし',
         'upload_name_help' => '任意。空欄の場合、元のファイル名がタイトルとして使用されます。',
         'alt_text_help' => '画像の alt 属性と SEO に使用されます。',
     ],

@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Chọn các chuyển đổi cụ thể để tạo lại. Để trống để áp dụng cho tất cả.',
         'file_updated_successfully' => 'Tệp đã được cập nhật thành công',
         'replace_file_help' => 'Tải lên một tệp mới để thay thế tệp hiện tại trong khi vẫn giữ cùng một bản ghi phương tiện.',
+        'no_caption' => 'Không có chú thích',
+        'no_alt_text' => 'Không có văn bản thay thế',
         'upload_name_help' => 'Tùy chọn. Nếu để trống, tên tệp gốc sẽ được dùng làm tiêu đề.',
         'alt_text_help' => 'Được dùng cho thuộc tính alt của hình ảnh và SEO.',
     ],

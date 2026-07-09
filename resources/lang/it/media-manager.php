@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Seleziona conversioni specifiche da rigenerare. Lascia vuoto per tutte.',
         'file_updated_successfully' => 'File aggiornato con successo',
         'replace_file_help' => 'Carica un nuovo file per sostituire quello corrente mantenendo lo stesso record media.',
+        'no_caption' => 'Nessuna didascalia',
+        'no_alt_text' => 'Nessun testo alternativo',
         'upload_name_help' => 'Opzionale. Se lasciato vuoto, il nome file originale verrà usato come titolo.',
         'alt_text_help' => 'Usato per l’attributo alt dell’immagine e per la SEO.',
     ],

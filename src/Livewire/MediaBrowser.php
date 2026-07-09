@@ -1144,12 +1144,30 @@ class MediaBrowser extends Component implements HasActions, HasForms
             ]),
 
             TextEntry::make('sel_caption')
-                ->state($file->caption)
-                ->visible((bool) $file->caption),
+                ->label(__('media-manager::media-manager.fields.caption'))
+                ->state(fn () => $file->caption ?? __('media-manager::media-manager.messages.no_caption'))
+                ->color(fn () => $file->caption ? null : 'gray')
+                ->hintAction(
+                    Action::make('editFileDetails')
+                        ->label(__('media-manager::media-manager.actions.edit'))
+                        ->icon('heroicon-m-pencil-square')
+                        ->form([
+                            TextInput::make('caption')
+                                ->label(__('media-manager::media-manager.fields.caption')),
+                            TextInput::make('alt_text')
+                                ->label(__('media-manager::media-manager.fields.alt_text')),
+                        ])
+                        ->fillForm(fn () => [
+                            'caption' => $file->caption,
+                            'alt_text' => $file->alt_text,
+                        ])
+                        ->action(fn (array $data) => $this->saveFileDetails($data))
+                ),
 
             TextEntry::make('alt_text')
-                ->state($file->alt_text)
-                ->visible((bool) $file->alt_text),
+                ->label(__('media-manager::media-manager.fields.alt_text'))
+                ->state(fn () => $file->alt_text ?? __('media-manager::media-manager.messages.no_alt_text'))
+                ->color(fn () => $file->alt_text ? null : 'gray'),
 
             TextEntry::make('sel_path')
                 ->label(__('media-manager::media-manager.details.public_url'))
@@ -1389,6 +1407,31 @@ class MediaBrowser extends Component implements HasActions, HasForms
         $this->setPage(1, $this->getPageName());
 
         $this->dispatch('media-folder-changed', folderId: $id, statePath: $this->statePath);
+    }
+
+    public function saveFileDetails(array $data): void
+    {
+        if (count($this->selectedItems) === 1) {
+            [$type, $id] = explode('-', reset($this->selectedItems));
+
+            if ($type === 'file') {
+                $file = $this->getFileModel()::find($id);
+
+                if ($file) {
+                    $file->update([
+                        'caption' => $data['caption'] ?? null,
+                        'alt_text' => $data['alt_text'] ?? null,
+                    ]);
+
+                    $this->clearCachedSchemas();
+
+                    Notification::make()
+                        ->title(__('media-manager::media-manager.messages.file_updated_successfully'))
+                        ->success()
+                        ->send();
+                }
+            }
+        }
     }
 
     public function saveTags(): void

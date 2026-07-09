@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Pilih konversi tertentu untuk dibuat ulang. Kosongkan untuk semua.',
         'file_updated_successfully' => 'File berhasil diperbarui',
         'replace_file_help' => 'Unggah file baru untuk mengganti file saat ini sambil mempertahankan catatan media yang sama.',
+        'no_caption' => 'Tidak ada keterangan',
+        'no_alt_text' => 'Tidak ada teks alt',
         'upload_name_help' => 'Opsional. Jika dikosongkan, nama file asli akan digunakan sebagai judul.',
         'alt_text_help' => 'Digunakan untuk atribut alt gambar dan SEO.',
     ],

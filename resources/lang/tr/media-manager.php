@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Yeniden oluşturulacak belirli dönüşümleri seçin. Tümü için boş bırakın.',
         'file_updated_successfully' => 'Dosya başarıyla güncellendi',
         'replace_file_help' => 'Aynı medya kaydını koruyarak mevcut dosyanın yerine yeni bir dosya yükleyin.',
+        'no_caption' => 'Başlık yok',
+        'no_alt_text' => 'Alternatif metin yok',
         'upload_name_help' => 'İsteğe bağlı. Boş bırakılırsa, orijinal dosya adı başlık olarak kullanılır.',
         'alt_text_help' => 'Görselin alt özelliği ve SEO için kullanılır.',
     ],

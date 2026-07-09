@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => '다시 생성할 특정 변환을 선택하세요. 모두 다시 생성하려면 비워 두세요.',
         'file_updated_successfully' => '파일이 성공적으로 업데이트되었습니다',
         'replace_file_help' => '동일한 미디어 레코드를 유지하면서 현재 파일을 교체할 새 파일을 업로드하세요.',
+        'no_caption' => '캡션 없음',
+        'no_alt_text' => '대체 텍스트 없음',
         'upload_name_help' => '선택 사항입니다. 비워 두면 원본 파일명이 제목으로 사용됩니다.',
         'alt_text_help' => '이미지 alt 속성과 SEO에 사용됩니다.',
     ],

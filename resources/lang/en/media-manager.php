@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Select specific conversions to regenerate. Leave empty for all.',
         'file_updated_successfully' => 'File updated successfully',
         'replace_file_help' => 'Upload a new file to replace the current one while keeping the same media record.',
+        'no_caption' => 'No caption',
+        'no_alt_text' => 'No alt text',
         'upload_name_help' => 'Optional. If empty, the original file name will be used as the title.',
         'alt_text_help' => 'Used for the image alt attribute and SEO.',
     ],

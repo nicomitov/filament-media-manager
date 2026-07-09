@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Wählen Sie bestimmte Konvertierungen zur Neugenerierung aus. Leer lassen für alle.',
         'file_updated_successfully' => 'Datei erfolgreich aktualisiert',
         'replace_file_help' => 'Laden Sie eine neue Datei hoch, um die aktuelle Datei zu ersetzen und denselben Medieneintrag beizubehalten.',
+        'no_caption' => 'Keine Bildunterschrift',
+        'no_alt_text' => 'Kein Alternativtext',
         'upload_name_help' => 'Optional. Wenn leer, wird der ursprüngliche Dateiname als Titel verwendet.',
         'alt_text_help' => 'Wird für das alt-Attribut des Bildes und für SEO verwendet.',
     ],

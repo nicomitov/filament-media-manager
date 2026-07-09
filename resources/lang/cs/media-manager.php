@@ -96,6 +96,8 @@ return [
         'specific_conversions_help' => 'Vyberte konkrétní konverze k opětovnému vygenerování. Pro všechny ponechte prázdné.',
         'file_updated_successfully' => 'Soubor byl úspěšně aktualizován',
         'replace_file_help' => 'Nahrajte nový soubor, který nahradí aktuální soubor při zachování stejného mediálního záznamu.',
+        'no_caption' => 'Bez popisku',
+        'no_alt_text' => 'Bez alternativního textu',
         'upload_name_help' => 'Volitelné. Pokud zůstane prázdné, jako název se použije původní název souboru.',
         'alt_text_help' => 'Používá se pro atribut alt obrázku a SEO.',
     ],
