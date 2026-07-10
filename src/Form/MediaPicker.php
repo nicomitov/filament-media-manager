@@ -328,8 +328,8 @@ class MediaPicker extends FileUpload
                 $pivotData = [];
                 $collection = $component->getCollection() ?: $component->getName();
 
-                foreach ($identifiers as $id) {
-                    $pivotData[$id] = ['collection' => $collection];
+                foreach ($identifiers as $index => id) {
+                    $pivotData[$id] = ['collection' => $collection, 'sort_order' => $index];
                 }
 
                 $relationship->sync($pivotData);
