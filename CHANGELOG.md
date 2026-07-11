@@ -2,6 +2,11 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v0.14.1 - 2026-07-11
+
+### Fixed
+- **Sort order persistence**: BelongsToMany relationships now store `sort_order` in the pivot table, enabling `->reorderable()` to actually persist file ordering (thanks @mutschler).
+
 ## v0.14.0 - 2026-07-09
 
 ### Added
