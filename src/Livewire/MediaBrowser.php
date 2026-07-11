@@ -1151,7 +1151,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                     Action::make('editFileDetails')
                         ->label(__('media-manager::media-manager.actions.edit'))
                         ->icon('heroicon-m-pencil-square')
-                        ->form([
+                        ->schema([
                             TextInput::make('caption')
                                 ->label(__('media-manager::media-manager.fields.caption')),
                             TextInput::make('alt_text')
