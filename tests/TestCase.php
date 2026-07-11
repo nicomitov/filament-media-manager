@@ -84,6 +84,7 @@ class TestCase extends Orchestra
             $table->foreignId('user_id');
             $table->foreignId('file_id');
             $table->string('collection')->nullable();
+            $table->integer('sort_order')->nullable();
         });
 
         Schema::create('media_folders', function ($table) {
