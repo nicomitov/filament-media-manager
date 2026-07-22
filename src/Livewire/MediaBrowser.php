@@ -1277,7 +1277,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
             TextEntry::make('crop_conversions')
                 ->label(__('media-manager::media-manager.fields.crop_variants'))
                 ->state($setConversions->isNotEmpty() ? $setConversions : __('media-manager::media-manager.messages.no_manual_crops'))
-                ->color($setConversions->isNotEmpty() ? 'success' : 'gray')
+                ->color($setConversions->isNotEmpty() ? 'primary' : 'gray')
                 ->badge()
                 ->hintAction(
                     Action::make('editCrops')
