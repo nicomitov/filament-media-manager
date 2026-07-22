@@ -36,6 +36,9 @@ return [
         'force_regeneration' => 'Force Regeneration',
         'edit' => 'Edit',
         'replace_file' => 'Replace file',
+        'choose_crop' => 'Choose crop',
+        'save_crop' => 'Save crop',
+        'remove_crop' => 'Remove crop',
     ],
     'fields' => [
         'search_files' => 'Search files...',
@@ -53,6 +56,8 @@ return [
         'min_size_mb' => 'Min Size (MB)',
         'max_size_mb' => 'Max Size (MB)',
         'specific_conversions' => 'Specific Conversions',
+        'crop_variants' => 'Crop variants',
+        'conversion' => 'Conversion',
     ],
 
     'sort' => [
@@ -100,6 +105,10 @@ return [
         'no_alt_text' => 'No alt text',
         'upload_name_help' => 'Optional. If empty, the original file name will be used as the title.',
         'alt_text_help' => 'Used for the image alt attribute and SEO.',
+        'no_manual_crops' => 'No manual crops set',
+        'choose_crop_heading' => 'Choose crop',
+        'crop_saved' => 'Crop saved and conversion regenerated',
+        'crop_removed' => 'Manual crop removed, conversion regenerated automatically',
     ],
 
     'details' => [

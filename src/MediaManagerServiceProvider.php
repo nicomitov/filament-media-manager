@@ -6,6 +6,7 @@ use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\RichEditor\TipTapExtensions\ImageExtension;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Slimani\MediaManager\Form\RichEditor\Nodes\MediaImageNode;
@@ -55,6 +56,8 @@ class MediaManagerServiceProvider extends PackageServiceProvider
             Css::make('media-manager-styles', __DIR__.'/../resources/css/media-manager.css')->loadedOnRequest(),
             AlpineComponent::make('filament-select-tree', $selectTreePath.'/resources/dist/filament-select-tree.js')->loadedOnRequest(),
             Css::make('filament-select-tree-styles', $selectTreePath.'/resources/dist/filament-select-tree.css')->loadedOnRequest(),
+            Js::make('media-manager-cropper', __DIR__.'/../resources/js/vendor/cropper.min.js')->loadedOnRequest(),
+            Css::make('media-manager-cropper-styles', __DIR__.'/../resources/css/vendor/cropper.min.css')->loadedOnRequest(),
         ], 'slimani/media-manager');
     }
 }

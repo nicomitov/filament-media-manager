@@ -33,7 +33,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +50,7 @@ use Slimani\MediaManager\Infolists\Components\RepeatableEntry as CustomRepeatabl
 use Slimani\MediaManager\MediaManagerPlugin;
 use Slimani\MediaManager\Models\File;
 use Slimani\MediaManager\Models\Folder;
+use Spatie\MediaLibrary\Conversions\Conversion;
 
 /**
  * @property-read Collection $items
@@ -1227,7 +1230,169 @@ class MediaBrowser extends Component implements HasActions, HasForms
                         })
                 ),
 
+            ...$this->cropConversionsSchema($file),
         ];
+    }
+
+    /**
+     * @return array<int, TextEntry>
+     */
+    protected function cropConversionsSchema(Model $file): array
+    {
+        /** @var File $file */
+        if (! str($file->mime_type)->startsWith('image/')) {
+            return [];
+        }
+
+        $media = $file->getFirstMedia('default');
+
+        if (! $media) {
+            return [];
+        }
+
+        $file->registerMediaConversions();
+
+        $conversions = collect($file->mediaConversions)
+            ->map(function ($conversion) use ($media) {
+                [$width, $height] = $this->resolveConversionDimensions($conversion);
+                $manualCrop = Arr::get($media->manipulations, "{$conversion->getName()}.manualCrop");
+
+                return [
+                    'name' => $conversion->getName(),
+                    'width' => $width,
+                    'height' => $height,
+                    'aspectRatio' => ($width && $height) ? $width / $height : null,
+                    'manualCrop' => $manualCrop,
+                ];
+            })
+            ->values();
+
+        if ($conversions->isEmpty()) {
+            return [];
+        }
+
+        $setConversions = $conversions->filter(fn (array $conversion) => filled($conversion['manualCrop']))->pluck('name');
+
+        return [
+            TextEntry::make('crop_conversions')
+                ->label(__('media-manager::media-manager.fields.crop_variants'))
+                ->state($setConversions->isNotEmpty() ? $setConversions : __('media-manager::media-manager.messages.no_manual_crops'))
+                ->color($setConversions->isNotEmpty() ? 'success' : 'gray')
+                ->badge()
+                ->hintAction(
+                    Action::make('editCrops')
+                        ->label(__('media-manager::media-manager.actions.choose_crop'))
+                        ->icon('heroicon-m-scissors')
+                        ->modalHeading(__('media-manager::media-manager.messages.choose_crop_heading'))
+                        ->modalContent(fn () => view('media-manager::livewire.crop-modal', [
+                            'imageUrl' => $file->getUrl(),
+                            'fileId' => $file->id,
+                            'conversions' => $conversions,
+                        ]))
+                        ->modalSubmitAction(false)
+                        ->modalCancelActionLabel(__('media-manager::media-manager.actions.close'))
+                ),
+        ];
+    }
+
+    /**
+     * @return array{0: int|null, 1: int|null}
+     */
+    private function resolveConversionDimensions(Conversion $conversion): array
+    {
+        $manipulations = $conversion->getManipulations();
+        $width = $manipulations->getFirstManipulationArgument('width');
+        $height = $manipulations->getFirstManipulationArgument('height');
+
+        if ($width && $height) {
+            return [$width, $height];
+        }
+
+        // fit()/crop() don't store width/height under their own keys — they store
+        // [Fit enum, width, height] under the 'fit' key instead.
+        $fit = $manipulations->getManipulationArgument('fit');
+
+        if (is_array($fit) && count($fit) >= 3) {
+            return [$fit[1], $fit[2]];
+        }
+
+        return [null, null];
+    }
+
+    public function saveManualCrop(int $fileId, string $conversionName, array $cropData): void
+    {
+        $fileModel = $this->getFileModel();
+
+        /** @var File $file */
+        $file = $fileModel::findOrFail($fileId);
+        $media = $file->getFirstMedia('default');
+
+        if (! $media) {
+            return;
+        }
+
+        $manipulations = $media->manipulations;
+        $manipulations[$conversionName] = [
+            'manualCrop' => [
+                (int) round($cropData['width']),
+                (int) round($cropData['height']),
+                (int) round($cropData['x']),
+                (int) round($cropData['y']),
+            ],
+        ];
+        $media->manipulations = $manipulations;
+        $media->save();
+
+        Artisan::call('media-library:regenerate', [
+            'modelType' => $file::class,
+            '--ids' => (string) $file->id,
+            '--only' => $conversionName,
+            '--force' => true,
+        ]);
+
+        $this->clearCachedSchemas();
+
+        Notification::make()
+            ->success()
+            ->title(__('media-manager::media-manager.messages.crop_saved'))
+            ->send();
+    }
+
+    public function removeManualCrop(int $fileId, string $conversionName): void
+    {
+        $fileModel = $this->getFileModel();
+
+        /** @var File $file */
+        $file = $fileModel::findOrFail($fileId);
+        $media = $file->getFirstMedia('default');
+
+        if (! $media || ! isset($media->manipulations[$conversionName])) {
+            return;
+        }
+
+        $manipulations = $media->manipulations;
+        unset($manipulations[$conversionName]['manualCrop']);
+
+        if (empty($manipulations[$conversionName])) {
+            unset($manipulations[$conversionName]);
+        }
+
+        $media->manipulations = $manipulations;
+        $media->save();
+
+        Artisan::call('media-library:regenerate', [
+            'modelType' => $file::class,
+            '--ids' => (string) $file->id,
+            '--only' => $conversionName,
+            '--force' => true,
+        ]);
+
+        $this->clearCachedSchemas();
+
+        Notification::make()
+            ->success()
+            ->title(__('media-manager::media-manager.messages.crop_removed'))
+            ->send();
     }
 
     protected function folderDetailsSchema(Model $folder): array
