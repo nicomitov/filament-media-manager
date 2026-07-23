@@ -1291,6 +1291,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                         ]))
                         ->modalSubmitAction(false)
                         ->modalCancelActionLabel(__('media-manager::media-manager.actions.close'))
+                        ->closeModalByClickingAway(false)
                 ),
         ];
     }

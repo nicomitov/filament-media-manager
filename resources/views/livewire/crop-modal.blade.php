@@ -33,6 +33,17 @@
                 document.head.appendChild(script)
             })
         },
+        waitForImage() {
+            const img = this.$refs.cropImage
+
+            if (img.complete && img.naturalWidth > 0) {
+                return Promise.resolve()
+            }
+
+            return new Promise((resolve) => {
+                img.addEventListener('load', () => resolve(), { once: true })
+            })
+        },
         activeConversionData() {
             return this.conversions.find((conversion) => conversion.name === this.activeConversion)
         },
@@ -47,7 +58,7 @@
             }
         },
         async initCropper() {
-            await this.loadCropperScript()
+            await Promise.all([this.loadCropperScript(), this.waitForImage()])
 
             this.cropper = new Cropper(this.$refs.cropImage, {
                 aspectRatio: this.activeConversionData()?.aspectRatio ?? NaN,
