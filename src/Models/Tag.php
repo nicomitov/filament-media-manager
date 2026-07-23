@@ -5,10 +5,13 @@ namespace Slimani\MediaManager\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
+use Slimani\MediaManager\Concerns\BelongsToTenant;
 use Slimani\MediaManager\MediaManagerPlugin;
 
 class Tag extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'media_tags';
 
     protected $fillable = [

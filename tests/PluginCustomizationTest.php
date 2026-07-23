@@ -80,3 +80,15 @@ it('can customize video thumbnails via plugin', function () {
     $plugin->videoThumbnails(true);
     expect($plugin->getWithVideoThumbnails())->toBeTrue();
 });
+
+it('can configure tenant awareness', function () {
+    $plugin = MediaManagerPlugin::make()
+        ->tenantAware(
+            tenantResolver: fn () => 'tenant-123',
+            tenantColumn: 'team_id',
+        );
+
+    expect($plugin->isTenantAware())->toBeTrue()
+        ->and($plugin->getTenantKey())->toBe('tenant-123')
+        ->and($plugin->getTenantColumn())->toBe('team_id');
+});

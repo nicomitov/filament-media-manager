@@ -89,6 +89,7 @@ class TestCase extends Orchestra
 
         Schema::create('media_folders', function ($table) {
             $table->id();
+            $table->string('tenant_id')->nullable()->index();
             $table->string('name');
             $table->foreignId('parent_id')->nullable()->constrained('media_folders')->nullOnDelete();
             $table->timestamps();
@@ -96,6 +97,7 @@ class TestCase extends Orchestra
 
         Schema::create('media_files', function ($table) {
             $table->id();
+            $table->string('tenant_id')->nullable()->index();
             $table->foreignId('uploaded_by_user_id')->nullable();
             $table->foreignId('folder_id')->nullable()->constrained('media_folders')->nullOnDelete();
             $table->string('name');
@@ -111,6 +113,7 @@ class TestCase extends Orchestra
 
         Schema::create('media_tags', function ($table) {
             $table->id();
+            $table->string('tenant_id')->nullable()->index();
             $table->string('name');
             $table->string('slug')->nullable();
             $table->string('type')->nullable();

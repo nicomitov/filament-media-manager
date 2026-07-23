@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Carbon;
+use LogicException;
+use Slimani\MediaManager\Concerns\BelongsToTenant;
 use Slimani\MediaManager\Database\Factories\FileFactory;
 use Slimani\MediaManager\MediaManagerPlugin;
 use Spatie\MediaLibrary\HasMedia;
@@ -32,10 +34,26 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class File extends Model implements HasMedia
 {
+    use BelongsToTenant;
     use HasFactory;
     use InteractsWithMedia;
 
     public static ?Closure $registerMediaConversionsUsing = null;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Model $file): void {
+            $plugin = static::resolveMediaManagerPlugin();
+
+            if (
+                $plugin?->isTenantAware()
+                && $file->folder_id !== null
+                && ! $plugin->getFolderModel()::query()->whereKey($file->folder_id)->exists()
+            ) {
+                throw new LogicException('A media file cannot be assigned to a folder from a different tenant.');
+            }
+        });
+    }
 
     public static function registerMediaConversionsUsing(?Closure $callback): void
     {

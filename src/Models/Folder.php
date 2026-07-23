@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use LogicException;
+use Slimani\MediaManager\Concerns\BelongsToTenant;
 use Slimani\MediaManager\MediaManagerPlugin;
 
 /**
@@ -19,6 +21,23 @@ use Slimani\MediaManager\MediaManagerPlugin;
  */
 class Folder extends Model
 {
+    use BelongsToTenant;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Model $folder): void {
+            $plugin = static::resolveMediaManagerPlugin();
+
+            if (
+                $plugin?->isTenantAware()
+                && $folder->parent_id !== null
+                && ! $plugin->getFolderModel()::query()->whereKey($folder->parent_id)->exists()
+            ) {
+                throw new LogicException('A media folder cannot be assigned to a parent from a different tenant.');
+            }
+        });
+    }
+
     protected $table = 'media_folders';
 
     protected $fillable = [
@@ -65,6 +84,28 @@ class Folder extends Model
     public function getAllDescendantIds(): array
     {
         $folderTable = $this->getTable();
+        /** @var MediaManagerPlugin $plugin */
+        $plugin = filament('media-manager');
+        $tenantColumn = $plugin->getTenantColumn();
+        $tenantKey = $plugin->getTenantKey();
+
+        if ($plugin->isTenantAware()) {
+            $query = "
+                WITH RECURSIVE FolderHierarchy AS (
+                    SELECT id, parent_id FROM {$folderTable}
+                    WHERE id = ? AND {$tenantColumn} = ?
+                    UNION ALL
+                    SELECT f.id, f.parent_id FROM {$folderTable} f
+                    INNER JOIN FolderHierarchy fh ON fh.id = f.parent_id
+                    WHERE f.{$tenantColumn} = ?
+                )
+                SELECT id FROM FolderHierarchy WHERE id != ?
+            ";
+
+            $results = DB::select($query, [$this->id, $tenantKey, $tenantKey, $this->id]);
+
+            return array_column($results, 'id');
+        }
 
         $query = "
             WITH RECURSIVE FolderHierarchy AS (
@@ -90,6 +131,43 @@ class Folder extends Model
         /** @var MediaManagerPlugin $plugin */
         $plugin = filament('media-manager');
         $fileTable = (new ($plugin->getFileModel()))->getTable();
+        $tenantColumn = $plugin->getTenantColumn();
+        $tenantKey = $plugin->getTenantKey();
+
+        if ($plugin->isTenantAware()) {
+            $query = "
+                WITH RECURSIVE FolderHierarchy AS (
+                    SELECT id FROM {$folderTable}
+                    WHERE id = ? AND {$tenantColumn} = ?
+                    UNION ALL
+                    SELECT f.id FROM {$folderTable} f
+                    INNER JOIN FolderHierarchy fh ON fh.id = f.parent_id
+                    WHERE f.{$tenantColumn} = ?
+                )
+                SELECT
+                    COUNT(DISTINCT {$fileTable}.id) as files_count,
+                    SUM({$fileTable}.size) as total_size,
+                    (SELECT COUNT(*) FROM FolderHierarchy WHERE id != ?) as folders_count
+                FROM FolderHierarchy
+                LEFT JOIN {$fileTable}
+                    ON {$fileTable}.folder_id = FolderHierarchy.id
+                    AND {$fileTable}.{$tenantColumn} = ?
+            ";
+
+            $result = DB::selectOne($query, [
+                $this->id,
+                $tenantKey,
+                $tenantKey,
+                $this->id,
+                $tenantKey,
+            ]);
+
+            return [
+                'files_count' => (int) ($result->files_count ?? 0),
+                'folders_count' => (int) ($result->folders_count ?? 0),
+                'total_size' => (int) ($result->total_size ?? 0),
+            ];
+        }
 
         $query = "
             WITH RECURSIVE FolderHierarchy AS (
