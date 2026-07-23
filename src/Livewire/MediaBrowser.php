@@ -483,11 +483,19 @@ class MediaBrowser extends Component implements HasActions, HasForms
                                     ->hiddenLabel()
                                     ->state($this->getItemsProperty())
                                     ->contained(false)
-                                    ->schema(fn (CustomRepeatableEntry $component) => [
-                                        MediaItem::make($item = $component->getItem())
-                                            ->isPicker($this->isPicker)
-                                            ->isAccepted(! ($this->isPicker && $item instanceof ($this->getFileModel())) || $this->isAccepted($item)),
-                                    ])
+                                    ->schema(function (CustomRepeatableEntry $component): array {
+                                        $item = $component->getItem();
+
+                                        if (! $item instanceof File && ! $item instanceof Folder) {
+                                            return [];
+                                        }
+
+                                        return [
+                                            MediaItem::make($item)
+                                                ->isPicker($this->isPicker)
+                                                ->isAccepted(! ($this->isPicker && $item instanceof ($this->getFileModel())) || $this->isAccepted($item)),
+                                        ];
+                                    })
                                     ->extraAttributes([
                                         'class' => 'fi-media-grid',
                                     ])
