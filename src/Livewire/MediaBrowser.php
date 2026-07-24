@@ -486,7 +486,10 @@ class MediaBrowser extends Component implements HasActions, HasForms
                                     ->schema(function (CustomRepeatableEntry $component): array {
                                         $item = $component->getItem();
 
-                                        if (! $item instanceof File && ! $item instanceof Folder) {
+                                        if (! (
+                                            $item instanceof ($this->getFileModel())
+                                            || $item instanceof ($this->getFolderModel())
+                                        )) {
                                             return [];
                                         }
 
