@@ -36,6 +36,9 @@ return [
         'force_regeneration' => 'Neugenerierung erzwingen',
         'edit' => 'Bearbeiten',
         'replace_file' => 'Datei ersetzen',
+        'choose_crop' => 'Ausschnitt wählen',
+        'save_crop' => 'Ausschnitt speichern',
+        'remove_crop' => 'Ausschnitt löschen',
     ],
     'fields' => [
         'search_files' => 'Dateien suchen...',
@@ -53,6 +56,8 @@ return [
         'min_size_mb' => 'Min. Größe (MB)',
         'max_size_mb' => 'Max. Größe (MB)',
         'specific_conversions' => 'Spezifische Konvertierungen',
+        'crop_variants' => 'Ausschnitt-Varianten',
+        'conversion' => 'Konvertierung',
     ],
 
     'sort' => [
@@ -100,6 +105,10 @@ return [
         'no_alt_text' => 'Kein Alternativtext',
         'upload_name_help' => 'Optional. Wenn leer, wird der ursprüngliche Dateiname als Titel verwendet.',
         'alt_text_help' => 'Wird für das alt-Attribut des Bildes und für SEO verwendet.',
+        'no_manual_crops' => 'Kein manueller Ausschnitt gesetzt',
+        'choose_crop_heading' => 'Ausschnitt wählen',
+        'crop_saved' => 'Ausschnitt gespeichert, Konvertierung wird neu generiert',
+        'crop_removed' => 'Manueller Ausschnitt entfernt, Konvertierung wird automatisch neu generiert',
     ],
 
     'details' => [
