@@ -89,6 +89,12 @@ Add the following lines to your `theme.css` file:
 
 ## Usage
 
+### Selection behavior
+
+A normal click selects one file or folder. To select multiple items, use the check icon on desktop or long-press an item on touch devices. This keeps normal browsing simple while still supporting bulk actions.
+
+We are keeping this behavior under review. If you have feedback, please join the discussion in [#18](https://github.com/slimani-dev/filament-media-manager/issues/18).
+
 ### Plugin Registration
 
 Register the plugin in your Panel Provider:
