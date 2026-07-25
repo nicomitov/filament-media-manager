@@ -322,6 +322,47 @@ MediaManagerPlugin::make()
     ->withVideoThumbnails() // Optional: Enable video thumbnails (requires FFMPEG)
 ```
 
+#### Multi-tenancy
+
+Tenant isolation is opt-in and works with Filament's active tenant by default. Publish the
+additional tenancy migration, run it, and enable tenancy on the plugin:
+
+```bash
+php artisan vendor:publish --tag="media-manager-tenancy-migration"
+php artisan migrate
+```
+
+```php
+use Slimani\MediaManager\MediaManagerPlugin;
+
+MediaManagerPlugin::make()
+    ->tenantAware()
+```
+
+The migration adds an indexed `tenant_id` string column to media files, folders, and tags.
+This supports integer, UUID, and ULID tenant keys without coupling the package to a specific
+tenant model. Existing records must be assigned to a tenant before enabling tenant awareness.
+
+By default, the tenant key is resolved from `Filament::getTenant()`. A custom resolver and
+column name may be supplied for applications using another tenancy context:
+
+```php
+MediaManagerPlugin::make()
+    ->tenantAware(
+        tenantResolver: fn () => auth()->user()?->team_id,
+        tenantColumn: 'team_id',
+    )
+```
+
+If you change the column name, update the published migration before running it. When tenancy
+is enabled and no tenant can be resolved, reads return no media records and writes throw an
+exception. Files, folders, tags, attachments, pickers, rich-editor integrations, and recursive
+folder statistics are all scoped to the resolved tenant.
+
+For private tenant assets, use a private storage disk. Tenant database scoping prevents records
+from being selected across tenants, but a public disk URL remains publicly accessible to anyone
+who knows that URL.
+
 #### Model Customization & Table Prefix Support
 
 The Media Manager is fully compatible with database table prefixes and allows you to customize the underlying models for File, Folder, Tag, and MediaAttachment.

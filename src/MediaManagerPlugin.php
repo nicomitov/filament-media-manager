@@ -2,11 +2,15 @@
 
 namespace Slimani\MediaManager;
 
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 use Slimani\MediaManager\Models\File;
 use Slimani\MediaManager\Models\Folder;
 use Slimani\MediaManager\Models\MediaAttachment;
@@ -29,11 +33,17 @@ class MediaManagerPlugin implements Plugin
 
     protected string|Closure|null $disk = null;
 
+    protected bool|Closure $tenantAware = false;
+
+    protected string|Closure $tenantColumn = 'tenant_id';
+
+    protected ?Closure $tenantResolver = null;
+
     protected string|Closure|null $navigationGroup = null;
 
     protected string|Closure|null $navigationLabel = null;
 
-    protected string|Closure|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected string|Closure|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected int|Closure|null $navigationSort = null;
 
@@ -148,6 +158,55 @@ class MediaManagerPlugin implements Plugin
         return $this->evaluate($this->disk) ?? config('media-library.disk_name', 'media');
     }
 
+    public function tenantAware(
+        bool|Closure $condition = true,
+        ?Closure $tenantResolver = null,
+        string|Closure $tenantColumn = 'tenant_id',
+    ): static {
+        $this->tenantAware = $condition;
+        $this->tenantResolver = $tenantResolver;
+        $this->tenantColumn = $tenantColumn;
+
+        return $this;
+    }
+
+    public function isTenantAware(): bool
+    {
+        return (bool) $this->evaluate($this->tenantAware);
+    }
+
+    public function getTenantColumn(): string
+    {
+        $column = (string) $this->evaluate($this->tenantColumn);
+
+        if (! preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $column)) {
+            throw new InvalidArgumentException("Invalid tenant column [{$column}].");
+        }
+
+        return $column;
+    }
+
+    public function getTenantKey(): string|int|null
+    {
+        $tenant = $this->tenantResolver
+            ? $this->evaluate($this->tenantResolver)
+            : Filament::getTenant();
+
+        if ($tenant instanceof Model) {
+            $tenant = $tenant->getKey();
+        }
+
+        if ($tenant instanceof BackedEnum) {
+            $tenant = $tenant->value;
+        }
+
+        if ($tenant === null || is_string($tenant) || is_int($tenant)) {
+            return $tenant;
+        }
+
+        throw new InvalidArgumentException('The media tenant resolver must return a model, backed enum, string, integer, or null.');
+    }
+
     public function navigationGroup(string|Closure|null $group): static
     {
         $this->navigationGroup = $group;
@@ -174,14 +233,14 @@ class MediaManagerPlugin implements Plugin
             ?? __('media-manager::media-manager.navigation.label');
     }
 
-    public function navigationIcon(string|Closure|\BackedEnum|null $icon): static
+    public function navigationIcon(string|Closure|BackedEnum|null $icon): static
     {
         $this->navigationIcon = $icon;
 
         return $this;
     }
 
-    public function getNavigationIcon(): string|\BackedEnum|null
+    public function getNavigationIcon(): string|BackedEnum|null
     {
         return $this->evaluate($this->navigationIcon);
     }

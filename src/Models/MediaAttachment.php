@@ -2,6 +2,7 @@
 
 namespace Slimani\MediaManager\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -18,6 +19,22 @@ class MediaAttachment extends Model
         'collection',
         'sort_order',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('media-manager-tenant', function (Builder $query): void {
+            try {
+                /** @var MediaManagerPlugin $plugin */
+                $plugin = filament('media-manager');
+
+                if ($plugin->isTenantAware()) {
+                    $query->whereHas('file');
+                }
+            } catch (\Throwable) {
+                //
+            }
+        });
+    }
 
     public function attachable(): MorphTo
     {

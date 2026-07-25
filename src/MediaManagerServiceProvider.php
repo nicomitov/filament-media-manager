@@ -21,6 +21,7 @@ class MediaManagerServiceProvider extends PackageServiceProvider
     {
         $migrations = [
             'create_media_manager_tables',
+            'add_tenant_to_media_manager_tables'
         ];
 
         // Filter out migrations that have already been published
@@ -47,6 +48,12 @@ class MediaManagerServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->publishes([
+            __DIR__.'/../database/migrations/add_tenant_to_media_manager_tables.php.stub' => database_path(
+                'migrations/'.date('Y_m_d_His').'_add_tenant_to_media_manager_tables.php'
+            ),
+        ], 'media-manager-tenancy-migration');
+
         Livewire::component('media-browser', MediaBrowser::class);
 
         $selectTreePath = dirname((new \ReflectionClass(SelectTree::class))->getFileName(), 2);
