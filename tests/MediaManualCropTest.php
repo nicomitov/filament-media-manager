@@ -30,7 +30,7 @@ it('lists app-registered conversions as croppable', function () {
 });
 
 it('persists a manual crop for a conversion and regenerates it', function () {
-    $file = File::create(['name' => 'Crop Source']);
+    $file = File::create(['name' => 'Crop Source', 'width' => 2000, 'height' => 1500]);
     $file->addMedia(UploadedFile::fake()->image('crop-source.jpg', 2000, 1500))
         ->toMediaCollection('default');
 
@@ -72,7 +72,7 @@ it('resolves width, height and aspect ratio for fit()-based conversions', functi
 });
 
 it('removes a manual crop and regenerates the conversion automatically', function () {
-    $file = File::create(['name' => 'Removable Crop']);
+    $file = File::create(['name' => 'Removable Crop', 'width' => 2000, 'height' => 1500]);
     $file->addMedia(UploadedFile::fake()->image('removable-crop.jpg', 2000, 1500))
         ->toMediaCollection('default');
 
@@ -108,7 +108,7 @@ it('does nothing when the file has no media attached', function () {
 });
 
 it('only shows conversions with a manual crop set in the sidebar summary', function () {
-    $file = File::create(['name' => 'Sidebar Source', 'mime_type' => 'image/jpeg']);
+    $file = File::create(['name' => 'Sidebar Source', 'mime_type' => 'image/jpeg', 'width' => 2000, 'height' => 1500]);
     $file->addMedia(UploadedFile::fake()->image('sidebar-source.jpg', 2000, 1500))
         ->toMediaCollection('default');
 
@@ -125,4 +125,38 @@ it('only shows conversions with a manual crop set in the sidebar summary', funct
     ]);
 
     $component->assertDontSee(__('media-manager::media-manager.messages.no_manual_crops'));
+});
+
+it('rejects an unregistered conversion name', function () {
+    $file = File::create(['name' => 'Crop Source', 'width' => 2000, 'height' => 1500]);
+    $file->addMedia(UploadedFile::fake()->image('crop-source.jpg', 2000, 1500))
+        ->toMediaCollection('default');
+
+    Livewire::test(MediaBrowser::class)
+        ->call('saveManualCrop', $file->id, 'not-a-conversion', [
+            'x' => 0,
+            'y' => 0,
+            'width' => 100,
+            'height' => 100,
+        ])
+        ->assertHasErrors(['conversionName']);
+
+    expect($file->fresh()->getFirstMedia('default')->manipulations)->toBe([]);
+});
+
+it('rejects a crop outside the original image dimensions', function () {
+    $file = File::create(['name' => 'Crop Source', 'width' => 2000, 'height' => 1500]);
+    $file->addMedia(UploadedFile::fake()->image('crop-source.jpg', 2000, 1500))
+        ->toMediaCollection('default');
+
+    Livewire::test(MediaBrowser::class)
+        ->call('saveManualCrop', $file->id, 'thumb', [
+            'x' => 1950,
+            'y' => 0,
+            'width' => 100,
+            'height' => 100,
+        ])
+        ->assertHasErrors(['cropData']);
+
+    expect($file->fresh()->getFirstMedia('default')->manipulations)->toBe([]);
 });

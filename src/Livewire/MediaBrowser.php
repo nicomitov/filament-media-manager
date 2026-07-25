@@ -39,8 +39,10 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Number;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -1343,13 +1345,15 @@ class MediaBrowser extends Component implements HasActions, HasForms
             return;
         }
 
+        $cropData = $this->validateManualCrop($file, $conversionName, $cropData);
+
         $manipulations = $media->manipulations;
         $manipulations[$conversionName] = [
             'manualCrop' => [
-                (int) round($cropData['width']),
-                (int) round($cropData['height']),
-                (int) round($cropData['x']),
-                (int) round($cropData['y']),
+                $cropData['width'],
+                $cropData['height'],
+                $cropData['x'],
+                $cropData['y'],
             ],
         ];
         $media->manipulations = $manipulations;
@@ -1378,7 +1382,13 @@ class MediaBrowser extends Component implements HasActions, HasForms
         $file = $fileModel::findOrFail($fileId);
         $media = $file->getFirstMedia('default');
 
-        if (! $media || ! isset($media->manipulations[$conversionName])) {
+        if (! $media) {
+            return;
+        }
+
+        $this->validateConversionName($file, $conversionName);
+
+        if (! isset($media->manipulations[$conversionName])) {
             return;
         }
 
@@ -1405,6 +1415,60 @@ class MediaBrowser extends Component implements HasActions, HasForms
             ->success()
             ->title(__('media-manager::media-manager.messages.crop_removed'))
             ->send();
+    }
+
+    /**
+     * @return array{x: int, y: int, width: int, height: int}
+     */
+    private function validateManualCrop(File $file, string $conversionName, array $cropData): array
+    {
+        $this->validateConversionName($file, $conversionName);
+
+        $validated = Validator::make($cropData, [
+            'x' => ['required', 'numeric', 'min:0'],
+            'y' => ['required', 'numeric', 'min:0'],
+            'width' => ['required', 'numeric', 'gt:0'],
+            'height' => ['required', 'numeric', 'gt:0'],
+        ])->validate();
+
+        $crop = [
+            'x' => (int) round($validated['x']),
+            'y' => (int) round($validated['y']),
+            'width' => (int) round($validated['width']),
+            'height' => (int) round($validated['height']),
+        ];
+
+        if ($crop['width'] < 1 || $crop['height'] < 1) {
+            throw ValidationException::withMessages([
+                'cropData' => __('The crop width and height must be at least one pixel.'),
+            ]);
+        }
+
+        if (
+            $file->width !== null
+            && $file->height !== null
+            && ($file->width < $crop['x'] + $crop['width'] || $file->height < $crop['y'] + $crop['height'])
+        ) {
+            throw ValidationException::withMessages([
+                'cropData' => __('The crop must stay within the original image dimensions.'),
+            ]);
+        }
+
+        return $crop;
+    }
+
+    private function validateConversionName(File $file, string $conversionName): void
+    {
+        $file->registerMediaConversions();
+
+        $isRegistered = collect($file->mediaConversions)
+            ->contains(fn (Conversion $conversion): bool => $conversion->getName() === $conversionName);
+
+        if (! $isRegistered) {
+            throw ValidationException::withMessages([
+                'conversionName' => __('The selected conversion is not available for this file.'),
+            ]);
+        }
     }
 
     protected function folderDetailsSchema(Model $folder): array
