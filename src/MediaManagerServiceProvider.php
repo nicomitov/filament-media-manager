@@ -21,7 +21,7 @@ class MediaManagerServiceProvider extends PackageServiceProvider
     {
         $migrations = [
             'create_media_manager_tables',
-            'add_tenant_to_media_manager_tables'
+            'add_tenant_to_media_manager_tables',
         ];
 
         // Filter out migrations that have already been published
