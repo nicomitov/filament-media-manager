@@ -25,7 +25,7 @@ class Folder extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (Model $folder): void {
+        static::saving(function (self $folder): void {
             $plugin = static::resolveMediaManagerPlugin();
 
             if (

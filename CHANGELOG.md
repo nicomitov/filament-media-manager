@@ -2,6 +2,14 @@
 
 All notable changes to `filament-media-manager` will be documented in this file.
 
+## v0.15.0 - 2026-07-25
+
+### Added
+- **Opt-in multi-tenancy**: Media files, folders, tags, attachments, picker integrations, and recursive folder statistics can now be scoped to Filament's active tenant or a custom tenant resolver.
+
+### Fixed
+- **Tenant picker isolation**: MediaPicker now validates selected IDs on the server, preventing forged references to media from another tenant.
+
 ## v0.14.1 - 2026-07-11
 
 ### Fixed

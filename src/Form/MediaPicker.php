@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Slimani\MediaManager\Livewire\MediaBrowser;
 use Slimani\MediaManager\MediaManagerPlugin;
@@ -308,6 +309,24 @@ class MediaPicker extends FileUpload
         $this->saveRelationshipsUsing(static function (MediaPicker $component, $state): void {
             $relationship = $component->getRelationship();
             $identifiers = $component->getIdentifiersFromState($state);
+
+            /** @var MediaManagerPlugin $plugin */
+            $plugin = filament('media-manager');
+            $fileModel = $plugin->getFileModel();
+            $identifiers = array_values(array_unique($identifiers));
+            $scopedIdentifiers = $fileModel::query()
+                ->whereKey($identifiers)
+                ->pluck((new $fileModel)->getKeyName())
+                ->map(static fn (string|int $id): string => (string) $id)
+                ->all();
+
+            if (count($scopedIdentifiers) !== count($identifiers)) {
+                throw ValidationException::withMessages([
+                    $component->getStatePath() => 'One or more selected files are not available in the current tenant.',
+                ]);
+            }
+
+            $identifiers = $scopedIdentifiers;
 
             if ($relationship instanceof BelongsTo) {
                 $record = $component->getRecord();

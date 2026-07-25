@@ -42,7 +42,7 @@ class File extends Model implements HasMedia
 
     protected static function booted(): void
     {
-        static::saving(function (Model $file): void {
+        static::saving(function (self $file): void {
             $plugin = static::resolveMediaManagerPlugin();
 
             if (

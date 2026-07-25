@@ -3,10 +3,13 @@
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Illuminate\Support\Facades\DB;
+use Livewire\Livewire;
 use Slimani\MediaManager\MediaManagerPlugin;
 use Slimani\MediaManager\Models\File;
 use Slimani\MediaManager\Models\Folder;
 use Slimani\MediaManager\Models\Tag;
+use Slimani\MediaManager\Tests\Components\TestMediaPickerRelationshipForm;
+use Slimani\MediaManager\Tests\Models\User;
 use Slimani\MediaManager\Tests\TestCase;
 
 uses(TestCase::class);
@@ -117,3 +120,21 @@ it('rejects cross-tenant folder relationships', function () {
         'folder_id' => $foreignFolder->id,
     ]);
 })->throws(LogicException::class, 'different tenant');
+
+it('rejects a forged media picker file id from another tenant', function () {
+    $tenantKey = 'tenant-one';
+    useMediaTenant($tenantKey);
+
+    $foreignFile = File::create(['name' => 'Tenant One File']);
+    $user = User::create(['name' => 'Test User']);
+
+    $tenantKey = 'tenant-two';
+
+    Livewire::actingAs($user)
+        ->test(TestMediaPickerRelationshipForm::class, ['user' => $user])
+        ->fillForm(['avatar_id' => $foreignFile->id])
+        ->call('submit')
+        ->assertHasFormErrors(['avatar_id']);
+
+    expect($user->fresh()->avatar_id)->toBeNull();
+});
