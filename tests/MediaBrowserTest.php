@@ -92,7 +92,7 @@ it('can select file in picker mode', function () {
         });
 });
 
-it('can select multiple files in picker mode', function () {
+it('uses explicit multi-select actions in picker mode', function () {
     $file1 = File::create(['name' => 'File 1', 'uploaded_by_user_id' => 1]);
     $file1->addMediaFromString('test 1')->usingFileName('test1.txt')->toMediaCollection('default');
 
@@ -101,12 +101,23 @@ it('can select multiple files in picker mode', function () {
 
     Livewire::test(MediaBrowser::class, ['isPicker' => true, 'multiple' => true, 'pickerId' => 'test-picker', 'statePath' => 'data.uuids'])
         ->call('selectFile', $file1->id)
-        ->call('selectFile', $file2->id)
+        ->call('toggleSelection', "file-{$file2->id}")
         ->assertSet('selectedItems', ["file-{$file1->id}", "file-{$file2->id}"])
         ->assertDispatched('sync-picker-ids', function ($event, $params) use ($file1, $file2) {
             return $params['statePath'] === 'data.uuids' &&
                    $params['ids'] === "{$file1->id},{$file2->id}";
         });
+});
+
+it('replaces the current selection when another file is clicked', function () {
+    $file1 = File::create(['name' => 'File 1']);
+    $file2 = File::create(['name' => 'File 2']);
+
+    Livewire::test(MediaBrowser::class)
+        ->call('selectFile', $file1->id)
+        ->call('selectFile', $file2->id)
+        ->assertSet('selectedItems', ["file-{$file2->id}"])
+        ->assertSet('selectedFileId', $file2->id);
 });
 
 test('view existence', function () {

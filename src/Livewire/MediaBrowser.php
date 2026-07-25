@@ -727,13 +727,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
         $this->selectedFileId = $id;
 
-        if ($this->isPicker && ! $this->multiple) {
-            $this->selectedItems = ["file-{$id}"];
-        } else {
-            $this->toggleSelection("file-{$id}");
-
-            return;
-        }
+        $this->selectedItems = ["file-{$id}"];
 
         $this->clearCachedSchemas();
 
