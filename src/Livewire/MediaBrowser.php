@@ -4,6 +4,7 @@ namespace Slimani\MediaManager\Livewire;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\FileUpload;
@@ -126,7 +127,8 @@ class MediaBrowser extends Component implements HasActions, HasForms
     public ?int $selectedFileId = null;
 
     // Picker State
-    public bool $showDetails = true;
+    // public bool $showDetails = true;
+    public bool $showDetails = false;
 
     public bool $isPicker = false;
 
@@ -149,7 +151,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
     public array $selectedItems = [];
 
-    public int|string $perPage = 10;
+    public int|string $perPage = 18; //koko
 
     public function getPageName(): string
     {
@@ -531,6 +533,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                             ->extraAttributes([
                                 'class' => 'flex h-full no-negative-header-margin',
                             ])
+                            ->compact() // koko
                             ->columnSpan(['lg' => 1])
                             ->visible(fn () => $this->showDetails)
                             ->schema([
@@ -560,7 +563,8 @@ class MediaBrowser extends Component implements HasActions, HasForms
                                                     return TextEntry::make('item_'.$itemKey)
                                                         ->hiddenLabel()
                                                         ->badge()
-                                                        ->state($item->name)
+                                                        ->state(\Str::limit($item->name, 20)) // koko
+                                                        ->tooltip(fn () => mb_strlen($item->name) > 20 ? $item->name : null) // koko
                                                         ->icon($item instanceof ($this->getFolderModel()) ? 'heroicon-m-folder' : 'heroicon-m-document')
                                                         ->iconColor($item instanceof ($this->getFolderModel()) ? 'amber' : 'gray')
                                                         ->belowContent(function () use ($item) {
@@ -595,28 +599,51 @@ class MediaBrowser extends Component implements HasActions, HasForms
                                                                 ]);
                                                             }
                                                         })
-                                                        ->suffixActions([
+                                                        // koko
+                                                        ->afterContent(ActionGroup::make([
                                                             Action::make('deselect')
-                                                                ->iconButton()
+                                                                ->label(__('Deselect'))
                                                                 ->icon(Heroicon::XMark)
                                                                 ->color('danger')
                                                                 ->action(fn () => $this->toggleSelection($itemKey)),
                                                             Action::make('locate')
-                                                                ->iconButton()
+                                                                ->label(__('Locate'))
                                                                 ->icon(Heroicon::OutlinedMagnifyingGlassCircle)
                                                                 ->action(fn () => $this->locateItem($itemKey)),
                                                             MediaAction::make($item->name)
-                                                                ->iconButton()
+                                                                ->label(__('Preview'))
                                                                 ->slideOver()
                                                                 ->icon(Heroicon::OutlinedEye)
                                                                 ->media(fn () => $item->getUrl())
                                                                 ->visible($item instanceof ($this->getFileModel())),
                                                             Action::make('open_url')
+                                                                ->label(__('Open URL'))
                                                                 ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
-                                                                ->iconButton()
                                                                 ->url(fn () => $item->getUrl(), true)
                                                                 ->visible($item instanceof ($this->getFileModel())),
-                                                        ]);
+                                                        ]));
+                                                        // ->suffixActions([
+                                                        //     Action::make('deselect')
+                                                        //         ->iconButton()
+                                                        //         ->icon(Heroicon::XMark)
+                                                        //         ->color('danger')
+                                                        //         ->action(fn () => $this->toggleSelection($itemKey)),
+                                                        //     Action::make('locate')
+                                                        //         ->iconButton()
+                                                        //         ->icon(Heroicon::OutlinedMagnifyingGlassCircle)
+                                                        //         ->action(fn () => $this->locateItem($itemKey)),
+                                                        //     MediaAction::make($item->name)
+                                                        //         ->iconButton()
+                                                        //         ->slideOver()
+                                                        //         ->icon(Heroicon::OutlinedEye)
+                                                        //         ->media(fn () => $item->getUrl())
+                                                        //         ->visible($item instanceof ($this->getFileModel())),
+                                                        //     Action::make('open_url')
+                                                        //         ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
+                                                        //         ->iconButton()
+                                                        //         ->url(fn () => $item->getUrl(), true)
+                                                        //         ->visible($item instanceof ($this->getFileModel())),
+                                                        // ]);
                                                 })->toArray())
                                                     ->extraAttributes([
                                                         'class' => 'multi-item-select',
@@ -819,6 +846,9 @@ class MediaBrowser extends Component implements HasActions, HasForms
         $this->dispatch('media-selection-synced', ids: $ids);
 
         $this->executeOnSelect();
+
+        // koko: hide details if no items selected
+        $this->showDetails = count($this->selectedItems) > 0;
     }
 
     public function isAccepted(Model $file): bool
@@ -1719,6 +1749,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('clearSelection')
             ->label(__('media-manager::media-manager.actions.clear'))
+            ->size('sm') // koko
             ->icon(Heroicon::XMark)
             ->color('danger')
             ->outlined()
@@ -1729,6 +1760,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('bulkDelete')
             ->label(__('media-manager::media-manager.actions.delete'))
+            ->size('sm') // koko
             ->icon(Heroicon::Trash)
             ->color('danger')
             ->requiresConfirmation()
@@ -1742,6 +1774,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('bulkMove')
             ->label(__('media-manager::media-manager.actions.move'))
+            ->size('sm') // koko
             ->icon(Heroicon::ArrowsRightLeft)
             ->schema([
                 SelectTree::make('folder_id')
@@ -1777,6 +1810,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('createFolder')
             ->label(__('media-manager::media-manager.actions.create_folder'))
+            ->size('sm') // koko
             ->icon(Heroicon::OutlinedFolderPlus)
             ->schema([
                 TextInput::make('name')
@@ -1798,6 +1832,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('goUp')
             ->label(__('media-manager::media-manager.actions.go_up'))
+            ->size('sm') // koko
             ->icon('heroicon-m-arrow-left')
             ->iconButton()
             ->color('gray')
@@ -1815,6 +1850,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('upload')
             ->label(__('media-manager::media-manager.actions.upload'))
+            ->size('sm') // koko
             ->icon('heroicon-m-arrow-up-tray')
             ->schema([
                 FileUpload::make('files')

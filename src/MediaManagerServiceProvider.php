@@ -1,6 +1,6 @@
 <?php
 
-namespace Slimani\MediaManager;
+namespace Slimani\MediaManager;;;;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\RichEditor\TipTapExtensions\ImageExtension;

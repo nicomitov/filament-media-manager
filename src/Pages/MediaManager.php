@@ -17,6 +17,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Size;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
@@ -33,6 +34,8 @@ class MediaManager extends Page implements HasActions, HasForms
         InteractsWithForms::getCachedSchemas insteadof InteractsWithSchemas;
         InteractsWithSchemas::getCachedSchemas as getBaseCachedSchemas;
     }
+
+    // protected Width | string | null $maxContentWidth = Width::SixExtraLarge;
 
     public array $selectedFileIds = [];
 
@@ -111,23 +114,23 @@ class MediaManager extends Page implements HasActions, HasForms
 
     protected function getHeaderActions(): array
     {
-        $versionInfo = $this->getVersionInfo();
-        $version = $versionInfo['version'];
-        $hasUpdate = $versionInfo['hasUpdate'];
+        // $versionInfo = $this->getVersionInfo();
+        // $version = $versionInfo['version'];
+        // $hasUpdate = $versionInfo['hasUpdate'];
 
         return [
-            Action::make('version')
-                ->label($hasUpdate
-                ? __('media-manager::media-manager.messages.update_available', ['version' => $versionInfo['latestVersion']])
-                : $version)
-                ->icon($hasUpdate ? 'heroicon-m-arrow-path' : null)
-                ->url('https://github.com/slimani-dev/filament-media-manager/releases', true)
-                ->link()
-                ->size(Size::ExtraSmall)
-                ->color($hasUpdate ? Color::Red : Color::Gray)
-                ->tooltip($hasUpdate
-                ? __('media-manager::media-manager.messages.current_version', ['version' => $version])
-                : __('media-manager::media-manager.messages.up_to_date')),
+            // Action::make('version')
+            //     ->label($hasUpdate
+            //     ? __('media-manager::media-manager.messages.update_available', ['version' => $versionInfo['latestVersion']])
+            //     : $version)
+            //     ->icon($hasUpdate ? 'heroicon-m-arrow-path' : null)
+            //     ->url('https://github.com/slimani-dev/filament-media-manager/releases', true)
+            //     ->link()
+            //     ->size(Size::ExtraSmall)
+            //     ->color($hasUpdate ? Color::Red : Color::Gray)
+            //     ->tooltip($hasUpdate
+            //     ? __('media-manager::media-manager.messages.current_version', ['version' => $version])
+            //     : __('media-manager::media-manager.messages.up_to_date')),
 
             ActionGroup::make([
                 Action::make('regenerate_conversions')
@@ -207,46 +210,46 @@ class MediaManager extends Page implements HasActions, HasForms
         ];
     }
 
-    protected function getVersionInfo(): array
-    {
-        $packageName = 'slimani/filament-media-manager';
+    // protected function getVersionInfo(): array
+    // {
+    //     $packageName = 'slimani/filament-media-manager';
 
-        $installedVersion = 'v0.0.0';
-        try {
-            $installedVersion = InstalledVersions::getPrettyVersion($packageName) ?? 'v0.0.0';
-        } catch (\Exception $e) {
-            // Fallback
-        }
+    //     $installedVersion = 'v0.0.0';
+    //     try {
+    //         $installedVersion = InstalledVersions::getPrettyVersion($packageName) ?? 'v0.0.0';
+    //     } catch (\Exception $e) {
+    //         // Fallback
+    //     }
 
-        $cacheKey = 'media_manager_latest_version';
+    //     $cacheKey = 'media_manager_latest_version';
 
-        $latestVersion = Cache::remember($cacheKey, now()->addDay(), function () {
-            try {
-                $response = Http::get('https://api.github.com/repos/slimani-dev/filament-media-manager/releases/latest');
+    //     $latestVersion = Cache::remember($cacheKey, now()->addDay(), function () {
+    //         try {
+    //             $response = Http::get('https://api.github.com/repos/slimani-dev/filament-media-manager/releases/latest');
 
-                if ($response->successful()) {
-                    return $response->json('tag_name');
-                }
-            } catch (\Exception $e) {
-                // Ignore network errors
-            }
+    //             if ($response->successful()) {
+    //                 return $response->json('tag_name');
+    //             }
+    //         } catch (\Exception $e) {
+    //             // Ignore network errors
+    //         }
 
-            return null;
-        });
+    //         return null;
+    //     });
 
-        $hasUpdate = false;
-        if ($latestVersion && $installedVersion !== 'dev-main') {
-            $hasUpdate = version_compare(
-                ltrim($installedVersion, 'v'),
-                ltrim($latestVersion, 'v'),
-                '<'
-            );
-        }
+    //     $hasUpdate = false;
+    //     if ($latestVersion && $installedVersion !== 'dev-main') {
+    //         $hasUpdate = version_compare(
+    //             ltrim($installedVersion, 'v'),
+    //             ltrim($latestVersion, 'v'),
+    //             '<'
+    //         );
+    //     }
 
-        return [
-            'version' => $installedVersion,
-            'latestVersion' => $latestVersion,
-            'hasUpdate' => $hasUpdate,
-        ];
-    }
+    //     return [
+    //         'version' => $installedVersion,
+    //         'latestVersion' => $latestVersion,
+    //         'hasUpdate' => $hasUpdate,
+    //     ];
+    // }
 }

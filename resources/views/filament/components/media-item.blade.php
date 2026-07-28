@@ -10,7 +10,7 @@
 
 <div
     {{ $attributes->class([
-        'fi-media-item group',
+        'fi-media-item group max-w-40',
         'fi-is-selected' => $isSelected,
         'fi-is-disabled' => !($isAccepted ?? true),
     ]) }}
@@ -119,9 +119,11 @@
             <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate flex items-center gap-1.5"
                 title="{{ $item->name }}">
                 @if($isFolder)
-                    <x-heroicon-m-folder class="w-3.5 h-3.5 text-amber-500" />
+                    {{-- koko --}}
+                    <x-heroicon-m-folder class="min-w-3.5 min-h-3.5 max-w-3.5 max-h-3.5 text-amber-500" />
                 @else
-                    <x-heroicon-m-document class="w-3.5 h-3.5 text-gray-400" />
+                    {{-- koko --}}
+                    <x-heroicon-m-document class="min-w-3.5 min-h-3.5 max-w-3.5 max-h-3.5 text-gray-400" />
                 @endif
                 <span class="truncate">{{ $item->name }}</span>
             </h4>

@@ -93,6 +93,7 @@ class MediaManagerRichContentPlugin implements HasFileAttachmentProvider, HasToo
 
                     return [
                         Livewire::make(MediaBrowser::class, [
+                            'perPage' => 12, //koko
                             'isPicker' => true,
                             'pickerId' => $pickerId,
                             'statePath' => $statePath,
