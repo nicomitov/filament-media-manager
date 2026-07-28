@@ -375,15 +375,18 @@ class MediaBrowser extends Component implements HasActions, HasForms
                     ->schema([
                         Flex::make(fn () => [
                             Flex::make([
-                                $this->createFolderAction(),
-                                $this->uploadAction(),
-                                $this->clearSelectionAction()
-                                    ->visible(fn () => count($this->selectedItems) > 1),
+                                // $this->createFolderAction(),
+                                // $this->uploadAction(),
+                                // $this->clearSelectionAction()
+                                //     ->visible(fn () => count($this->selectedItems) > 1),
+                                view('media-manager::components.breadcrumbs', ['breadcrumbs' => $this->breadcrumbs]),
                             ])->extraAttributes([
                                 'class' => 'gap-2',
                             ]),
 
                             Flex::make([
+                                $this->clearSelectionAction()
+                                    ->visible(fn () => count($this->selectedItems) > 1),
                                 TextInput::make('search')
                                     ->live()
                                     ->debounce()
@@ -479,7 +482,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                             ->visible(fn () => $this->showFilters)
                             ->columnSpanFull(),
                         \Slimani\MediaManager\Components\Section::make()
-                            ->heading(view('media-manager::components.breadcrumbs', ['breadcrumbs' => $this->breadcrumbs]))
+                            // ->heading(view('media-manager::components.breadcrumbs', ['breadcrumbs' => $this->breadcrumbs]))
                             ->columnSpan(fn () => ['lg' => $this->showDetails ? 3 : 4]) // Dynamic Column Span
                             ->extraAttributes([
                                 'class' => 'fi-media-grid-container',
@@ -720,6 +723,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                                 $this->bulkDeleteAction()
                                     ->visible(fn () => count($this->selectedItems) > 0),
                                 $this->clearSelectionAction()
+                                    ->size('sm')
                                     ->visible(fn () => count($this->selectedItems) > 0),
                             ]),
                     ]),
@@ -1749,7 +1753,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('clearSelection')
             ->label(__('media-manager::media-manager.actions.clear'))
-            ->size('sm') // koko
+            // ->size('sm') // koko
             ->icon(Heroicon::XMark)
             ->color('danger')
             ->outlined()
@@ -1810,7 +1814,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('createFolder')
             ->label(__('media-manager::media-manager.actions.create_folder'))
-            ->size('sm') // koko
+            // ->size('sm') // koko
             ->icon(Heroicon::OutlinedFolderPlus)
             ->schema([
                 TextInput::make('name')
@@ -1850,7 +1854,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
     {
         return Action::make('upload')
             ->label(__('media-manager::media-manager.actions.upload'))
-            ->size('sm') // koko
+            // ->size('sm') // koko
             ->icon('heroicon-m-arrow-up-tray')
             ->schema([
                 FileUpload::make('files')

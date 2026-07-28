@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
+use Slimani\MediaManager\Livewire\MediaBrowser;
 use Slimani\MediaManager\MediaManagerPlugin;
 
 class MediaManager extends Page implements HasActions, HasForms
@@ -118,6 +119,11 @@ class MediaManager extends Page implements HasActions, HasForms
         // $version = $versionInfo['version'];
         // $hasUpdate = $versionInfo['hasUpdate'];
 
+        $mediaBroswer = new MediaBrowser();
+        $createFolderAction = $mediaBroswer->createFolderAction();
+        $uploadAction = $mediaBroswer->uploadAction();
+        // $clearSelectionAction = $mediaBroswer->clearSelectionAction();
+
         return [
             // Action::make('version')
             //     ->label($hasUpdate
@@ -132,7 +138,9 @@ class MediaManager extends Page implements HasActions, HasForms
             //     ? __('media-manager::media-manager.messages.current_version', ['version' => $version])
             //     : __('media-manager::media-manager.messages.up_to_date')),
 
+            $uploadAction,
             ActionGroup::make([
+                $createFolderAction,
                 Action::make('regenerate_conversions')
                     ->label(__('media-manager::media-manager.actions.regenerate_conversions'))
                     ->icon('heroicon-m-arrow-path')
@@ -204,9 +212,12 @@ class MediaManager extends Page implements HasActions, HasForms
                         }
                     }),
             ])
-                ->icon(Heroicon::EllipsisVertical)
-                ->color('gray')
-                ->iconButton(),
+                ->button()
+                ->label(__('media-manager::media-manager.actions.more_actions'))
+                ->icon('heroicon-c-chevron-down')
+                ->iconPosition('after')
+                ->color('gray'),
+                // ->iconButton(),
         ];
     }
 

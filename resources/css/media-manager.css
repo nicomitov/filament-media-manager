@@ -78,6 +78,9 @@
     container-type: inline-size;
     container-name: media-grid;
 }
+.fi-media-grid-container header {
+    @apply hidden;
+}
 
 .fi-media-grid {
     display: grid !important;

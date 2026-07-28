@@ -10,7 +10,7 @@
 
 <div
     {{ $attributes->class([
-        'fi-media-item group max-w-40',
+        'fi-media-item group --max-w-40',
         'fi-is-selected' => $isSelected,
         'fi-is-disabled' => !($isAccepted ?? true),
     ]) }}

@@ -39,6 +39,7 @@ return [
         'choose_crop' => 'Choose crop',
         'save_crop' => 'Save crop',
         'remove_crop' => 'Remove crop',
+        'more_actions' => 'More actions',
     ],
     'fields' => [
         'search_files' => 'Search files...',
