@@ -74,6 +74,11 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
     public ?string $serializedOnSelect = null;
 
+    #[On('refreshMediaManager')]
+    public function refresh(): void
+    {
+    }
+
     public function clearCachedSchemas(): void
     {
         $this->cachedSchemas = [];
@@ -1829,6 +1834,9 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
                 $this->dispatch('media-uploaded');
                 $this->clearCachedSchemas();
+            })
+            ->after(function (Component $livewire) {
+                $livewire->dispatch('refreshMediaManager');
             });
     }
 
@@ -1966,6 +1974,10 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
                 $this->dispatch('media-uploaded');
                 $this->clearCachedSchemas();
+
+            })
+            ->after(function (Component $livewire) {
+                $livewire->dispatch('refreshMediaManager');
             });
     }
 

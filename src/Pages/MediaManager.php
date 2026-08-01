@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
+use Livewire\Component;
 use Slimani\MediaManager\Livewire\MediaBrowser;
 use Slimani\MediaManager\MediaManagerPlugin;
 
@@ -140,7 +141,10 @@ class MediaManager extends Page implements HasActions, HasForms
 
             $uploadAction,
             ActionGroup::make([
-                $createFolderAction,
+                $createFolderAction
+                    ->after(function (Component $livewire) {
+                        $livewire->dispatch('refreshRelationTable');
+                    }),
                 Action::make('regenerate_conversions')
                     ->label(__('media-manager::media-manager.actions.regenerate_conversions'))
                     ->icon('heroicon-m-arrow-path')

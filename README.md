@@ -40,7 +40,7 @@ A comprehensive media manager plugin for Filament v4 and v5.
 ### Filtering by Type (Document) and Sorting By size
 ![Image Editor](https://s3.slimani.dev/media-manager/Screen%20Shot%202026-03-19%20at%2021.39.24.png)
 
-### Rich Text Integration, Media Picker, MediaEntries 
+### Rich Text Integration, Media Picker, MediaEntries
 ![Bulk Actions](https://s3.slimani.dev/media-manager/Screen%20Shot%202026-03-19%20at%2021.40.41.png)
 
 ### Media Picker (in Action)
@@ -427,7 +427,7 @@ public function boot(): void
             ->width(500)
             ->height(500)
             ->nonQueued();
-        
+
         // Default 'preview' (800x800) is kept if not overridden
     });
 }
