@@ -141,10 +141,7 @@ class MediaManager extends Page implements HasActions, HasForms
 
             $uploadAction,
             ActionGroup::make([
-                $createFolderAction
-                    ->after(function (Component $livewire) {
-                        $livewire->dispatch('refreshRelationTable');
-                    }),
+                $createFolderAction,
                 Action::make('regenerate_conversions')
                     ->label(__('media-manager::media-manager.actions.regenerate_conversions'))
                     ->icon('heroicon-m-arrow-path')
