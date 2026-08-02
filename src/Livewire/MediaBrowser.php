@@ -137,6 +137,9 @@ class MediaBrowser extends Component implements HasActions, HasForms
 
     public bool $isPicker = false;
 
+    // koko
+    public bool $isModal = false;
+
     public bool $multiple = false;
 
     public ?string $pickerId = null;
@@ -380,11 +383,11 @@ class MediaBrowser extends Component implements HasActions, HasForms
                     ->schema([
                         Flex::make(fn () => [
                             Flex::make([
+                                view('media-manager::components.breadcrumbs', ['breadcrumbs' => $this->breadcrumbs]),
                                 // $this->createFolderAction(),
                                 // $this->uploadAction(),
                                 // $this->clearSelectionAction()
                                 //     ->visible(fn () => count($this->selectedItems) > 1),
-                                view('media-manager::components.breadcrumbs', ['breadcrumbs' => $this->breadcrumbs]),
                             ])->extraAttributes([
                                 'class' => 'gap-2',
                             ]),
@@ -392,6 +395,8 @@ class MediaBrowser extends Component implements HasActions, HasForms
                             Flex::make([
                                 $this->clearSelectionAction()
                                     ->visible(fn () => count($this->selectedItems) > 1),
+                                $this->uploadAction()
+                                    ->visible(fn ($livewire) => $livewire->isModal), // koko
                                 TextInput::make('search')
                                     ->live()
                                     ->debounce()
