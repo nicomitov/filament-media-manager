@@ -1227,6 +1227,7 @@ class MediaBrowser extends Component implements HasActions, HasForms
                 ->label(__('media-manager::media-manager.details.public_url'))
                 ->state($file->getUrl())
                 ->copyable()
+                ->copyableState($file->getUrl())
                 ->limit(30)
                 ->hintActions([
                     Action::make('locate')
