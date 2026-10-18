@@ -22,9 +22,10 @@ class MediaColumn extends ImageColumn
         return $this->evaluate($this->conversion) ?? 'thumb';
     }
 
-    public function getImageUrl(mixed $state = null): ?string
+    public function getImageUrl(?string $state = null, ?\Illuminate\Database\Eloquent\Model $relatedRecord = null): ?string
     {
-        $state ??= $this->getState();
+        // $state ??= $this->getState();
+        $state = $this->getState();
 
         if ($state instanceof Collection) {
             $state = $state->first();

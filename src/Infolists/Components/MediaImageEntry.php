@@ -22,11 +22,11 @@ class MediaImageEntry extends ImageEntry
         return $this->evaluate($this->conversion) ?? 'thumb';
     }
 
-    public function getImageUrl(mixed $state = null): ?string
+    public function getImageUrl(?string $state = null, ?\Illuminate\Database\Eloquent\Model $relatedRecord = null): ?string
     {
-        if (blank($state)) {
+        // if (blank($state)) {
             $state = $this->getState();
-        }
+        // }
 
         if ($state instanceof Collection) {
             $state = $state->first();
